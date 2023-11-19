@@ -17,6 +17,9 @@ import MenuAppBar from "./components/Navbar/AppBar";
 import ProductImageForm from "./components/pages/Products/ProductImageForm";
 import IAdmin from "./interfaces/IAdmin";
 import AdminContext from "./context/AdminContext";
+import Categories from "./components/pages/Categories/Categories";
+import UpdateDatabase from "./components/pages/UpdateDatabase";
+import NewCategory from "./components/pages/Categories/NewCategory";
 
 export default function App() {
   const [admin, setAdmin] = useState<IAdmin | undefined>({
@@ -31,25 +34,31 @@ export default function App() {
   return (
     <div>
       <AdminContext.Provider value={{ admin, setAdmin }}>
-        
-        <div className="mt-5 pt-5">
+        <div className="">
           <BrowserRouter>
-          <MenuAppBar />
-            <Routes>
-              <Route path="/" element={<Products />} />
-              <Route
-                path="/products/image/:id"
-                element={<ProductImageForm />}
-              />
-              <Route path="/products/:id" element={<Product />} />
+            <MenuAppBar />
+            <div className="pt-4">
+              <Routes>
+                <Route path="/" element={<Products />} />
+                <Route
+                  path="/products/image/:id"
+                  element={<ProductImageForm />}
+                />
+                <Route path="/products/:id" element={<Product />} />
 
-              <Route path="/admins" element={<Admins />}></Route>
-              <Route path="/admins/new" element={<NewAdmin />}></Route>
-              <Route path="/admins/edit/:id" element={<EditAdmin />}></Route>
+                <Route path="/admins" element={<Admins />}></Route>
+                <Route path="/admins/new" element={<NewAdmin />}></Route>
+                <Route path="/admins/edit/:id" element={<EditAdmin />}></Route>
 
-              <Route path="/categories/edit/:id" element={<EditCategory />} />
-              <Route path="/categories/:id" element={<Category />} />
-            </Routes>
+                <Route path="/categories" element={<Categories />} />
+                <Route path="/categories/new" element={<NewCategory />} />
+
+                <Route path="/categories/edit/:id" element={<EditCategory />} />
+                <Route path="/categories/:id" element={<Category />} />
+
+                <Route path="/update" element={<UpdateDatabase />} />
+              </Routes>
+            </div>
           </BrowserRouter>
         </div>
       </AdminContext.Provider>

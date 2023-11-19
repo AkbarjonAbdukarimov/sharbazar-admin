@@ -13,8 +13,6 @@ interface Product {
   page: number;
   totalCount: number;
 }
-const getProducts = () =>
-  axios.get<Product>("/products/admin").then((res) => res.data);
 const Products: FunctionComponent = () => {
   const [errs, setErrs] = useState<IError[] | undefined>();
   const [products, setProducts] = useState<IProduct[] | undefined>();

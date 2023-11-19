@@ -1,9 +1,9 @@
 import IMedia from "./IMedia";
-import ISubcategory from "./ISubcategory";
+import IProduct from "./Product/IProduct";
 
 export default interface ICategory {
-  id: string;
+  _id: string;
   name: string;
   icon?: IMedia;
-  subcategories: ISubcategory[];
+  products?:IProduct[];
 }

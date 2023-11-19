@@ -5,12 +5,14 @@ import {
   Typography,
   TextField,
   Button,
+  CircularProgress,
 } from "@mui/material";
 import axios, { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Errors from "../../Errors";
 import IError from "../../../interfaces/IError";
+import { green } from "@mui/material/colors";
 
 interface ICategoryFormProps {
   formType: "new" | "edit";
@@ -22,111 +24,124 @@ const CategoryForm: React.FunctionComponent<ICategoryFormProps> = ({
   requestPath,
   id,
 }) => {
-  // const [_open, setOpen] = useState(false);
-  // const [err, setError] = useState<IError[] | undefined>();
-  // const [category, setCategory] = useState<string>("");
-  // const navigate = useNavigate();
-  // useEffect(() => {
-  //   if (id) {
-  //     console.log(id);
-  //     axios
-  //       .get("/categories/" + id)
-  //       .then((res) => setCategory(res.data.name))
-  //       .catch((e) => {
-  //         if (err) {
-  //           setError([...err, e]);
-  //         } else {
-  //           setError([e]);
-  //         }
-  //       });
-  //   }
-  // }, []);
-  // async function handleSubmit(
-  //   e: React.FormEvent<HTMLFormElement>
-  // ): Promise<void> {
-  //   e.preventDefault();
-  //   try {
-  //     //@ts-ignore
-  //     const data = new FormData(e.target);
+  const [err, setError] = useState<IError[] | undefined>();
+  const [category, setCategory] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (id) {
+      console.log(id);
+      axios
+        .get("/categories/" + id)
+        .then((res) => setCategory(res.data.name))
+        .catch((e) => {
+          if (err) {
+            setError([...err, e]);
+          } else {
+            setError([e]);
+          }
+        });
+    }
+  }, []);
+  async function handleSubmit(
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> {
+    e.preventDefault();
+    setLoading(true)
+    try {
+      //@ts-ignore
+      const data = new FormData(e.target);
 
-  //     await axios({
-  //       url: requestPath,
-  //       data,
-  //       method: formType === "edit" ? "put" : "post",
-  //     });
-  //     navigate("/categories");
-  //   } catch (error) {
-  //     if (error instanceof AxiosError) {
-  //       const { errors }: { errors: IError[] } = error.response!.data;
+      await axios({
+        url: requestPath,
+        data,
+        method: formType === "edit" ? "put" : "post",
+      });
+      navigate("/categories");
+    } catch (error) {
+      setLoading(false)
+      if (error instanceof AxiosError) {
+        const { errors }: { errors: IError[] } = error.response!.data;
 
-  //       setError([...errors]);
-  //       setOpen(true);
-  //     }
-  //   }
-  // }
+        setError([...errors]);
+      }
+    }
+  }
 
-  // return (
-  //   <>
-  //     <form onSubmit={handleSubmit} noValidate encType="multipart/form-data">
-  //       <Container component="main">
-  //         <CssBaseline />
+  return (
+    <>
+      <form onSubmit={handleSubmit} noValidate encType="multipart/form-data">
+        <Container component="main">
+          <CssBaseline />
 
-  //         <Box
-  //           sx={{
-  //             marginTop: 8,
-  //             display: "flex",
-  //             flexDirection: "column",
-  //             alignItems: "center",
-  //           }}
-  //         >
-  //           <Typography component="h1" variant="h5">
-  //             {formType === "new" ? "New Category" : "Edit Category"}
-  //           </Typography>
+          <Box
+            sx={{
+              marginTop: 8,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <Typography component="h1" variant="h5">
+              {formType === "new" ? "New Category" : "Edit Category"}
+            </Typography>
 
-  //           <Box sx={{ mt: 1 }}>
-  //             <TextField
-  //               margin="normal"
-  //               required
-  //               fullWidth
-  //               id="name"
-  //               value={category}
-  //               onChange={(e) => {
-  //                 setCategory(e.target.value);
-  //               }}
-  //               label="Category Name"
-  //               name="name"
-  //             />
+            <Box sx={{ mt: 1 }}>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="name"
+                value={category}
+                onChange={(e) => {
+                  setCategory(e.target.value);
+                }}
+                label="Category Name"
+                name="name"
+              />
 
-  //             <div className="mb-3">
-  //               <label htmlFor="formFileSm" className="form-label">
-  //                 Select Product Files
-  //               </label>
-  //               <input
-  //                 name="icon"
-  //                 className="form-control form-control-sm"
-  //                 id="formFileSm"
-  //                 type="file"
-  //                 multiple
-  //               />
-  //             </div>
+              <div className="mb-3">
+                <label htmlFor="formFileSm" className="form-label">
+                  Select Icon
+                </label>
+                <input
+                  name="image"
+                  className="form-control form-control-sm"
+                  id="formFileSm"
+                  type="file"
+                  multiple
+                />
+              </div>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+                disabled={loading}
+              >
+                Submit
+                {loading && (
+                  <CircularProgress
+                    size={24}
+                    sx={{
+                      color: green[500],
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      marginTop: "-12px",
+                      marginLeft: "-12px",
+                    }}
+                  />
+                )}
+              </Button>
+            </Box>
+          </Box>
 
-  //             <Button
-  //               type="submit"
-  //               fullWidth
-  //               variant="contained"
-  //               sx={{ mt: 3, mb: 2 }}
-  //             >
-  //               Submit
-  //             </Button>
-  //           </Box>
-  //         </Box>
-
-  //         <Errors errs={err} />
-  //       </Container>
-  //     </form>
-  //   </>
-  // );
-  return <></>;
+          <Errors errs={err} />
+        </Container>
+      </form>
+    </>
+  );
 };
 
 export default CategoryForm;
