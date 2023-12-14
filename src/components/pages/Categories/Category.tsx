@@ -1,89 +1,110 @@
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "react-query";
 import Loading from "../../Loading";
-import { SpeedDial, SpeedDialIcon } from "@mui/material";
-import axios from "axios";
+import { CardMedia, SpeedDial, SpeedDialIcon } from "@mui/material";
+import axios, { AxiosError } from "axios";
 import ICategory from "../../../interfaces/ICategory";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import IError from "../../../interfaces/IError";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Errors from "../../Errors";
+import IProduct from "../../../interfaces/Product/IProduct";
 
-const getCategory = (id: string): Promise<ICategory> =>
-  axios.get(`/categories/${id}`).then((response) => response.data);
 export default function Category() {
-  // const [errs, setErrs] = useState<IError[] | undefined>()
-  // const { id } = useParams()
-  // const { isLoading, data, refetch } = useQuery<ICategory>(['category', id], () => getCategory(String(id)))
+  const [errs, setErrs] = useState<IError[] | undefined>();
+  const { id } = useParams();
+  const [category, setCategory] = useState<ICategory>();
+  useEffect(() => {
+    if (id) {
+      axios
+        .get<ICategory>(`/categories/${id}`)
+        .then((res) => setCategory(res.data))
+        .catch((e) => {
+          if (e instanceof AxiosError) {
+            setErrs(e.response?.data.errors);
+          } else {
+            setErrs([{ message: e.message }]);
+          }
+        });
+    }
+  }, []);
+  const columns: GridColDef[] = [
+    { field: "code", headerName: "Code", width: 70 },
+    { field: "name", headerName: "Product Name", width: 150 },
+    { field: "category", headerName: "Category", width: 150 },
+    { field: "qty", headerName: "Quantity", width: 70 },
+    { field: "price", headerName: "Price", width: 70 },
+    { field: "addOn", headerName: "Add On", width: 70 },
+    {
+      field: "Add Image",
+      headerName: "",
+      width: 150,
+      renderCell: (params) => (
+        <Link to={`/products/image/${params.id}`}>Add Image</Link>
+      ),
+    },
+    {
+      field: "Details",
+      headerName: "",
+      width: 150,
+      renderCell: (params) => (
+        <Link to={`/products/${params.id}`}>Details</Link>
+      ),
+    },
+  ];
 
-  // if (isLoading) {
-  //     return <Loading isLoading={isLoading} />
-  // }
+  if (!category) {
+    return <Loading isLoading={true} />;
+  }
 
-  // function handleDelete(id: string) {
-  //     axios.delete('/categories/' + id).then(() => {
-  //         return refetch()
-  //     }).catch(e => setErrs(e))
-  // }
+  return (
+    <div className="">
+      <div className="container d-flex justify-content-center">
+        <h1>{category.name.ru}</h1>
+        <CardMedia
+          component="img"
+          alt={category.name.ru}
+          width="100"
+          image={
+            `https://ik.imagekit.io/z6k3ktb71/${category._id}.PNG` ||
+            `https://ik.imagekit.io/z6k3ktb71/${category._id}.png` ||
+            `https://ik.imagekit.io/z6k3ktb71/${category._id}.JPG` ||
+            `https://ik.imagekit.io/z6k3ktb71/${category._id}.jpg`
+          }
+        />
+      </div>
+      <div className="mt-3">
+        <DataGrid
+          getRowId={(row: IProduct) => row.code}
+          rows={category.products || []}
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: { page: 0, pageSize: 30 },
+            },
+          }}
+          pageSizeOptions={[5, 10]}
+          checkboxSelection
+        />
+      </div>
+      <Errors errs={errs} />
+      {/* <div
+        style={{
+          position: "fixed",
+          right: 0,
+          bottom: 0,
 
-  // const columns: GridColDef[] = [
-  //     { field: 'id', headerName: 'ID', width: 250 },
-  //     { field: 'name', headerName: 'Category Name', width: 150 },
-  //     {
-  //         field: 'Details', headerName: '', width: 150,
-  //         renderCell: (params) => (
-  //             <Link to={`/categories/${id}/subcategory/${params.id}`}>Details</Link>
-  //         )
-  //     },
-  //     {
-  //         field: 'Edit', headerName: '', width: 150,
-  //         renderCell: (params) => (
-  //             <Link to={`/categories/${data?.id}/subcategory/edit/${params.id}`}>Edit</Link>
-  //         )
-  //     },
-  //     {
-  //         field: 'Delete', headerName: '', width: 150,
-  //         renderCell: (params) => (
-  //             <Link
-  //                 to={""}
-  //                 onClick={() => { handleDelete(String(params.id)); }}
-  //             >
-  //                 Delete
-  //             </Link>
-  //         )
-  //     },
-
-  // ];
-
-  // return (
-
-  //     <div className=' row justify-content-center mt-3 w-100'>
-  //         <div className="my-2 d-flex justify-content-center align-items-center">
-  //             <h3 className='mx-2'>{data?.name}</h3>
-  //             <div className='mx-2'><img style={{ width: "45px" }} src={'https://ik.imagekit.io/z6k3ktb71/' + data?.icon?.name} alt="" /></div>
-  //         </div>
-  //         <DataGrid
-  //             rows={data?.subcategories||[]}
-  //             columns={columns}
-  //             autoHeight={true}
-  //         />
-  //         <Errors errs={errs} />
-  //         <div style={{
-  //             position: 'fixed',
-  //             right: 0,
-  //             bottom: 0
-
-  //         }}>
-
-  //             <Link to={`/categories/${id}/new`}>
-  //                 <SpeedDial
-  //                     ariaLabel="SpeedDial basic example"
-  //                     sx={{ position: 'absolute', bottom: 16, right: 16 }}
-  //                     icon={<SpeedDialIcon />}
-  //                 >
-  //                 </SpeedDial></Link>
-  //         </div>
-  //     </div>
-  // )
-  return <></>;
+          // backgroundColor:"red"
+        }}
+      >
+        <Link to="/categories/new">
+          <SpeedDial
+            ariaLabel="SpeedDial basic example"
+            sx={{ position: "absolute", bottom: 16, right: 16 }}
+            icon={<SpeedDialIcon />}
+          ></SpeedDial>
+        </Link>{" "}
+      </div> */}
+    </div>
+  );
 }

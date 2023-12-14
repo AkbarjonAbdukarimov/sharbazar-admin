@@ -48,8 +48,24 @@ export default function Categories() {
   }, []);
   const columns: GridColDef[] = [
     { field: "_id", headerName: "Id", width: 70 },
-    { field: "name", headerName: "Product Name", width: 150 },
-
+    {
+      field: "RU",
+      headerName: "RU",
+      width: 150,
+      renderCell: (params) => params.row.name.ru || "",
+    },
+    {
+      field: "UZ",
+      headerName: "UZ",
+      width: 150,
+      renderCell: (params) => params.row.name.uz || "",
+    },
+    {
+      field: "KP",
+      headerName: "KP",
+      width: 150,
+      renderCell: (params) => params.row.name.kp || "",
+    },
     // {
     //   field: "Add Image",
     //   headerName: "",
@@ -63,7 +79,7 @@ export default function Categories() {
     {
       field: "Details",
       headerName: "",
-      width: 150,
+      width: 75,
       renderCell: (params) => (
         <Link to={`/categories/${params.id}`}>Details</Link>
       ),
@@ -96,7 +112,7 @@ export default function Categories() {
           position: "fixed",
           right: 0,
           bottom: 0,
-         
+
           // backgroundColor:"red"
         }}
       >

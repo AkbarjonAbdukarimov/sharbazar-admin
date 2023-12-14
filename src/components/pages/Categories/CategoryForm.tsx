@@ -13,6 +13,8 @@ import { useNavigate } from "react-router-dom";
 import Errors from "../../Errors";
 import IError from "../../../interfaces/IError";
 import { green } from "@mui/material/colors";
+import ILang from "../../../interfaces/ILang";
+import ICategory from "../../../interfaces/ICategory";
 
 interface ICategoryFormProps {
   formType: "new" | "edit";
@@ -25,14 +27,14 @@ const CategoryForm: React.FunctionComponent<ICategoryFormProps> = ({
   id,
 }) => {
   const [err, setError] = useState<IError[] | undefined>();
-  const [category, setCategory] = useState<string>("");
+  const [category, setCategory] = useState<ILang>();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
     if (id) {
       console.log(id);
       axios
-        .get("/categories/" + id)
+        .get<ICategory>("/categories/" + id)
         .then((res) => setCategory(res.data.name))
         .catch((e) => {
           if (err) {
@@ -47,11 +49,10 @@ const CategoryForm: React.FunctionComponent<ICategoryFormProps> = ({
     e: React.FormEvent<HTMLFormElement>
   ): Promise<void> {
     e.preventDefault();
-    setLoading(true)
+    setLoading(true);
     try {
       //@ts-ignore
       const data = new FormData(e.target);
-
       await axios({
         url: requestPath,
         data,
@@ -59,7 +60,7 @@ const CategoryForm: React.FunctionComponent<ICategoryFormProps> = ({
       });
       navigate("/categories");
     } catch (error) {
-      setLoading(false)
+      setLoading(false);
       if (error instanceof AxiosError) {
         const { errors }: { errors: IError[] } = error.response!.data;
 
@@ -67,7 +68,13 @@ const CategoryForm: React.FunctionComponent<ICategoryFormProps> = ({
       }
     }
   }
-
+  function handleChange(
+    e: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>
+  ) {
+    const newCt = category || {};
+    newCt[e.target.name] = e.target.value;
+    setCategory(newCt);
+  }
   return (
     <>
       <form onSubmit={handleSubmit} noValidate encType="multipart/form-data">
@@ -86,18 +93,33 @@ const CategoryForm: React.FunctionComponent<ICategoryFormProps> = ({
               {formType === "new" ? "New Category" : "Edit Category"}
             </Typography>
 
-            <Box sx={{ mt: 1 }}>
+            <Box sx={{ mt: 1, width: "30%" }}>
               <TextField
                 margin="normal"
                 required
                 fullWidth
                 id="name"
-                value={category}
-                onChange={(e) => {
-                  setCategory(e.target.value);
-                }}
-                label="Category Name"
-                name="name"
+                label="Category Name in Russian"
+                name="ru"
+                onChange={handleChange}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="name"
+                label="Category Name in Uzbek"
+                name="uz"
+                onChange={handleChange}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="name"
+                label="Category Name in Karakalpak"
+                name="kp"
+                onChange={handleChange}
               />
 
               <div className="mb-3">
