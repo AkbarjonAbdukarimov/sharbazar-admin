@@ -11,8 +11,7 @@ export default function ProductImageForm() {
   const [product, setProduct] = useState<IProduct | undefined>();
   const [errs, setErrs] = useState<IError[] | undefined>();
   const [isLoading, setLoading] = useState(false);
-  const navigate=useNavigate()
-  
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -26,7 +25,7 @@ export default function ProductImageForm() {
   // if (errs) {
   //   return <Errors errs={errs} />;
   // }
-  async function handleSubmit(e) {
+  async function handleSubmit(e: any) {
     try {
       e.preventDefault();
       if (!product) {
@@ -35,18 +34,17 @@ export default function ProductImageForm() {
       }
       setLoading(true);
       const data = new FormData(e.target);
-      console.log([...data.entries()])
-       const res = await axios.post(`/products/image/${product.code}`, data);
-       navigate('/')
-    } catch (error:any) {
-      setLoading(false)
-      setErrs(prev=>{
-        if(error instanceof AxiosError &&error.response){
-          
-          return [...error.response.data.errors]
+      console.log([...data.entries()]);
+      await axios.post(`/products/image/${product.code}`, data);
+      navigate("/");
+    } catch (error: any) {
+      setLoading(false);
+      setErrs((_prev) => {
+        if (error instanceof AxiosError && error.response) {
+          return [...error.response.data.errors];
         }
-        return [{message:error.message}]
-      })
+        return [{ message: error.message }];
+      });
     }
   }
   return (
@@ -59,7 +57,7 @@ export default function ProductImageForm() {
         >
           <h1>Add Image to {product.name}</h1>
           <div className="my-3">
-            <input name="image" type="file"/>
+            <input name="image" type="file" />
           </div>
           <Button
             sx={{ width: "180px", height: "55px", padding: "10px 15px" }}
@@ -69,7 +67,7 @@ export default function ProductImageForm() {
             {!isLoading ? "Submit" : <CircularProgress color="inherit" />}
           </Button>
         </form>
-        <Errors errs={errs} />  
+        <Errors errs={errs} />
       </div>
     </div>
   );

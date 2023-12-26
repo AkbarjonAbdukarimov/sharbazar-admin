@@ -27,15 +27,18 @@ const CategoryForm: React.FunctionComponent<ICategoryFormProps> = ({
   id,
 }) => {
   const [err, setError] = useState<IError[] | undefined>();
-  const [category, setCategory] = useState<ILang>();
+  const [_cat, setCat] = useState<ICategory>();
+  const [category, setCategory] = useState<ILang>({ ru: "", uz: "", kp: "" });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
     if (id) {
-      console.log(id);
       axios
         .get<ICategory>("/categories/" + id)
-        .then((res) => setCategory(res.data.name))
+        .then((res) => {
+          setCat(res.data);
+          setCategory(res.data.name);
+        })
         .catch((e) => {
           if (err) {
             setError([...err, e]);
@@ -53,27 +56,46 @@ const CategoryForm: React.FunctionComponent<ICategoryFormProps> = ({
     try {
       //@ts-ignore
       const data = new FormData(e.target);
+      //data.append("name", category);
+      console.log(category);
       await axios({
         url: requestPath,
         data,
         method: formType === "edit" ? "put" : "post",
       });
+      setLoading(false);
       navigate("/categories");
-    } catch (error) {
+    } catch (error: any) {
       setLoading(false);
       if (error instanceof AxiosError) {
         const { errors }: { errors: IError[] } = error.response!.data;
 
         setError([...errors]);
       }
+      setError([{ message: error.messsage }]);
     }
   }
   function handleChange(
     e: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>
   ) {
-    const newCt = category || {};
-    newCt[e.target.name] = e.target.value;
-    setCategory(newCt);
+    setCategory((prev) => {
+      //@ts-ignore
+      if (e.target.name === "name[ru]") {
+        //@ts-ignore
+        return { ...category, ru: e.target.value.toString().toUpperCase() };
+      }
+      //@ts-ignore
+      if (e.target.name === "name[uz]") {
+        //@ts-ignore
+        return { ...category, uz: e.target.value.toString().toUpperCase() };
+      }
+      //@ts-ignore
+      if (e.target.name === "name[kp]") {
+        //@ts-ignore
+        return { ...category, kp: e.target.value.toString().toUpperCase() };
+      }
+      return prev;
+    });
   }
   return (
     <>
@@ -100,7 +122,9 @@ const CategoryForm: React.FunctionComponent<ICategoryFormProps> = ({
                 fullWidth
                 id="name"
                 label="Category Name in Russian"
-                name="ru"
+                name="name[ru]"
+                value={category.ru}
+                //@ts-ignore
                 onChange={handleChange}
               />
               <TextField
@@ -109,16 +133,20 @@ const CategoryForm: React.FunctionComponent<ICategoryFormProps> = ({
                 fullWidth
                 id="name"
                 label="Category Name in Uzbek"
-                name="uz"
+                name="name[uz]"
+                value={category.uz || ""}
+                //@ts-ignore
                 onChange={handleChange}
               />
               <TextField
                 margin="normal"
                 required
                 fullWidth
-                id="name"
+                id="kp"
                 label="Category Name in Karakalpak"
-                name="kp"
+                name="name[kp]"
+                value={category.kp || ""}
+                //@ts-ignore
                 onChange={handleChange}
               />
 

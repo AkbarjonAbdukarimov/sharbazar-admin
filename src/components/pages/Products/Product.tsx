@@ -4,10 +4,7 @@ import { useParams } from "react-router-dom";
 import IProduct from "../../../interfaces/Product/IProduct";
 import Loading from "../../Loading";
 
-import { styled } from "@mui/material/styles";
 import Card from "@mui/material/Card";
-import CardHeader from "@mui/material/CardHeader";
-import IconButton, { IconButtonProps } from "@mui/material/IconButton";
 import IError from "../../../interfaces/IError";
 import Errors from "../../Errors";
 import {
@@ -73,8 +70,3 @@ export default function Product() {
     </div>
   );
 }
-
-interface ExpandMoreProps extends IconButtonProps {
-  expand: boolean;
-}
-

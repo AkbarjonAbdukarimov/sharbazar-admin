@@ -1,6 +1,5 @@
 import { FunctionComponent, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { SpeedDial, SpeedDialIcon } from "@mui/material";
 import Loading from "../../Loading";
 import axios, { AxiosError } from "axios";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
@@ -8,11 +7,6 @@ import IProduct from "../../../interfaces/Product/IProduct";
 import IError from "../../../interfaces/IError";
 import Errors from "../../Errors";
 
-interface Product {
-  products: IProduct[];
-  page: number;
-  totalCount: number;
-}
 const Products: FunctionComponent = () => {
   const [errs, setErrs] = useState<IError[] | undefined>();
   const [products, setProducts] = useState<IProduct[] | undefined>();
@@ -26,20 +20,18 @@ const Products: FunctionComponent = () => {
   // }
   useEffect(() => {
     axios
-      .get<Product[]>("/products")
+      .get<IProduct[]>("/products")
       .then((res) => {
-        
         setProducts(res.data);
       })
       .catch((e) => {
-        setErrs(prev=>{
-          if(e instanceof AxiosError &&e.response){
-            
-            return [...e.response.data.errors]
+        setErrs((_prev) => {
+          if (e instanceof AxiosError && e.response) {
+            return [...e.response.data.errors];
           }
-          return [{message:e.message}]
-        })
-      })
+          return [{ message: e.message }];
+        });
+      });
   }, []);
   const columns: GridColDef[] = [
     { field: "code", headerName: "Code", width: 70 },
@@ -53,9 +45,7 @@ const Products: FunctionComponent = () => {
       headerName: "",
       width: 150,
       renderCell: (params) => (
-        <Link to={`/products/image/${params.id}`}>
-         Add Image
-        </Link>
+        <Link to={`/products/image/${params.id}`}>Add Image</Link>
       ),
     },
     {
@@ -63,9 +53,7 @@ const Products: FunctionComponent = () => {
       headerName: "",
       width: 150,
       renderCell: (params) => (
-        <Link to={`/products/${params.id}`}>
-          Details
-        </Link>
+        <Link to={`/products/${params.id}`}>Details</Link>
       ),
     },
   ];
@@ -73,8 +61,8 @@ const Products: FunctionComponent = () => {
   if (!products) {
     return <Loading isLoading={true} />;
   }
-  if(errs){
-    return  <Errors errs={errs} />;
+  if (errs) {
+    return <Errors errs={errs} />;
   }
   return (
     <div className="">

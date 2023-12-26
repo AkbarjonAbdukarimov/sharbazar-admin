@@ -1,7 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { useQuery } from "react-query";
 import Loading from "../../Loading";
-import { CardMedia, SpeedDial, SpeedDialIcon } from "@mui/material";
 import axios, { AxiosError } from "axios";
 import ICategory from "../../../interfaces/ICategory";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
@@ -31,7 +29,7 @@ export default function Category() {
   const columns: GridColDef[] = [
     { field: "code", headerName: "Code", width: 70 },
     { field: "name", headerName: "Product Name", width: 150 },
-    { field: "category", headerName: "Category", width: 150 },
+    // { field: "category", headerName: "Category", width: 150 },
     { field: "qty", headerName: "Quantity", width: 70 },
     { field: "price", headerName: "Price", width: 70 },
     { field: "addOn", headerName: "Add On", width: 70 },
@@ -61,15 +59,14 @@ export default function Category() {
     <div className="">
       <div className="container d-flex justify-content-center">
         <h1>{category.name.ru}</h1>
-        <CardMedia
-          component="img"
+        <img
           alt={category.name.ru}
-          width="100"
-          image={
-            `https://ik.imagekit.io/z6k3ktb71/${category._id}.PNG` ||
-            `https://ik.imagekit.io/z6k3ktb71/${category._id}.png` ||
-            `https://ik.imagekit.io/z6k3ktb71/${category._id}.JPG` ||
-            `https://ik.imagekit.io/z6k3ktb71/${category._id}.jpg`
+          width="50px"
+          src={
+            `https://ik.imagekit.io/z6k3ktb71/${category.icon?.name}`
+            // `https://ik.imagekit.io/z6k3ktb71/${category._id}.png` ||
+            // `https://ik.imagekit.io/z6k3ktb71/${category._id}.JPG` ||
+            // `https://ik.imagekit.io/z6k3ktb71/${category._id}.jpg`
           }
         />
       </div>

@@ -1,5 +1,5 @@
 import "./App.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Products from "./components/pages/Products/Products";
 import Category from "./components/pages/Categories/Category";

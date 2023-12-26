@@ -2,22 +2,11 @@ import { useEffect, useState } from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { Link } from "react-router-dom";
 import Loading from "../../Loading";
-import { IconButton, SpeedDial, SpeedDialIcon, styled } from "@mui/material";
+import { SpeedDial, SpeedDialIcon } from "@mui/material";
 import axios, { AxiosError } from "axios";
 import IError from "../../../interfaces/IError";
 import Errors from "../../Errors";
-import IProduct from "../../../interfaces/Product/IProduct";
 import ICategory from "../../../interfaces/ICategory";
-import Fab from "@mui/material/Fab";
-import AddIcon from "@mui/icons-material/Add";
-const StyledFab = styled(Fab)({
-  position: "absolute",
-  zIndex: 1,
-  top: -30,
-  left: 0,
-  right: 0,
-  margin: "0 auto",
-});
 type Categories = { id: string; name: string };
 
 export default function Categories() {
@@ -38,7 +27,7 @@ export default function Categories() {
         setCategories(res.data);
       })
       .catch((e) => {
-        setErrs((prev) => {
+        setErrs(() => {
           if (e instanceof AxiosError && e.response) {
             return [...e.response.data.errors];
           }
@@ -82,6 +71,14 @@ export default function Categories() {
       width: 75,
       renderCell: (params) => (
         <Link to={`/categories/${params.id}`}>Details</Link>
+      ),
+    },
+    {
+      field: "Edit",
+      headerName: "",
+      width: 75,
+      renderCell: (params) => (
+        <Link to={`/categories/edit/${params.id}`}>Edit</Link>
       ),
     },
   ];

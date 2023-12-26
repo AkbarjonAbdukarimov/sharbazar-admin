@@ -3,7 +3,6 @@ import {
   CssBaseline,
   Box,
   Typography,
-  TextField,
   Button,
   CircularProgress,
   FormControl,
@@ -13,14 +12,14 @@ import {
 } from "@mui/material";
 import { green } from "@mui/material/colors";
 import axios, { AxiosError } from "axios";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import IError from "../../interfaces/IError";
 import Errors from "../Errors";
 
 export default function UpdateDatabase() {
   const [err, setError] = useState<IError[] | undefined>();
-  const [category, setCategory] = useState<string>("");
+  // const [category, setCategory] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -33,14 +32,14 @@ export default function UpdateDatabase() {
       //@ts-ignore
       const data = new FormData(e.target);
 
-      const res = await axios({
+      await axios({
         url: "/updatedb",
         data,
         method: "post",
       });
       setLoading(false);
       //console.log(res.data)
-      //navigate("/");
+      navigate("/");
     } catch (error) {
       setLoading(false);
       if (error instanceof AxiosError) {
